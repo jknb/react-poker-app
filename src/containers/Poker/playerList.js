@@ -15,12 +15,12 @@ export const playerList = [
     chips: 0,
   },
   {
-    name: 'malakas',
+    name: 'Noob',
     hand: [],
     chips: 0,
   },
   {
-    name: 'gamw',
+    name: 'Pro',
     hand: [],
     chips: 0,
   },
