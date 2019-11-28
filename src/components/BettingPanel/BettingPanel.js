@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import classes from './BettingPanel.module.css';
 import RaiseBar from './RaiseBar/RaiseBar';
-import Button from './Button/Button';
+import Button from '../Button/Button';
 
 class BettingPanel extends Component {
   state = { inputValue: '' }
@@ -14,9 +14,12 @@ class BettingPanel extends Component {
     return (
       <div className={classes.BettingPanel}>
         <RaiseBar chips={this.props.chips} handleChange={this.handleChange} inputValue={this.state.inputValue}/>
-        <Button clicked={this.props.foldClicked} value="Fold" />
-        <Button clicked={this.props.callClicked} value="Call" />
-        <Button clicked={() => this.props.raiseClicked(this.state.inputValue)} value="Raise" />
+        
+          <Button className={`${classes.Button} ${classes.Left}`} clicked={this.props.foldClicked} value="Fold" />
+          <Button className={`${classes.Button} ${classes.Middle}`} clicked={this.props.callClicked} value="Call" />
+          <Button className={`${classes.Button} ${classes.Right}`} clicked={() => this.props.raiseClicked(this.state.inputValue)} value="Raise" />
+        
+        
       </div>
     );
   }

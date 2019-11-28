@@ -5,6 +5,7 @@ import BettingPanel from '../../components/BettingPanel/BettingPanel';
 
 import { generatedDeck } from '../../components/Deck/Deck';
 import { playerList } from './playerList';
+import { EventEmitter } from '../../events';
 
 import { shuffle } from 'lodash-es';
 import classes from './Poker.module.css';
@@ -12,19 +13,26 @@ import classes from './Poker.module.css';
 class Poker extends Component {
   state = {
     deck: [],
-    players: playerList
+    players: playerList,
   }
 
-  constructor(props) {
-    super(props);
-    
+  newGameStart = () => {
     const newDeck = shuffle(generatedDeck());
+    const newPlayers = [...this.state.players];
     
-    this.state.players.forEach(player => {
+    newPlayers.forEach(player => {
       player.hand = newDeck.splice(0, 2);
-    });
+      player.chips = 1500;
+    }); 
     
-    this.state.deck = newDeck;
+    this.setState({
+      deck: newDeck,
+      players: newPlayers,
+    });
+  }
+
+  componentDidMount() {
+    EventEmitter.subscribe('startGame', this.newGameStart);
   }
 
   raiseClicked = (amount) => {

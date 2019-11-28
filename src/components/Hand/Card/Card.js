@@ -1,9 +1,11 @@
 import React from 'react';
+import { cardNames } from '../../../cardNames';
+
 import classes from './Card.module.css';
 
 const Card = (props) => (
   <li className={classes.Card}>
-    {props.rank} of {props.suit}
+    {cardNames[props.rank] || props.rank} of {props.suit}
   </li>
 );
 

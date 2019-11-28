@@ -1,27 +1,27 @@
 export const playerList = [
   {
     name: 'Chris',
-    hand: {},
-    chips: 1500,
+    hand: [],
+    chips: 0,
   },
   {
     name: 'Dog',
-    hand: {},
-    chips: 1500,
+    hand: [],
+    chips: 0,
   },
   {
     name: 'OpenAI',
-    hand: {},
-    chips: 1500,
+    hand: [],
+    chips: 0,
   },
   {
     name: 'malakas',
-    hand: {},
-    chips: 1500,
+    hand: [],
+    chips: 0,
   },
   {
     name: 'gamw',
-    hand: {},
-    chips: 1500,
+    hand: [],
+    chips: 0,
   },
 ];
