@@ -17,7 +17,7 @@ class BettingPanel extends Component {
         
           <Button className={`${classes.Button} ${classes.Left}`} clicked={this.props.foldClicked} value="Fold" />
           <Button className={`${classes.Button} ${classes.Middle}`} clicked={this.props.callClicked} value="Call" />
-          <Button className={`${classes.Button} ${classes.Right}`} clicked={() => this.props.raiseClicked(this.state.inputValue)} value="Raise" />
+          <Button className={`${classes.Button} ${classes.Right}`} clicked={() => this.props.raiseClicked(this.state.inputValue)} value={"Raise " + this.state.inputValue} />
         
         
       </div>

@@ -4,14 +4,14 @@ import Player from './Player/Player';
 import uuid from 'uuid';
 
 const Players = (props) => {
-  const offSet = 2 * Math.PI / props.players.length;
 
   return (
     <ul className={classes.Players}>
       {props.players.map((player, index) => (
         <Player 
-          key={uuid()} 
-          rotateAngle={offSet * index} 
+          key={uuid()}
+          playersLength={props.players.length} 
+          seatIndex={index} 
           name={player.name}
           hand={player.hand}
           chips={player.chips} />
