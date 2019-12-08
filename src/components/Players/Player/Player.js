@@ -7,7 +7,8 @@ import { getRotateAngle, getTranslationY } from '../../../utils/tableSeatsPositi
 const Player = (props) => {
   const playersLength = useContext(PlayersLengthContext);
   const rotateAngle = getRotateAngle(props.seatIndex, playersLength);
-  const translationY = 80 + getTranslationY(props.seatIndex, playersLength);
+  // const translationY = 80 + getTranslationY(props.seatIndex, playersLength);
+  const translationY = getTranslationY(props.seatIndex, playersLength);
 
   return (
     <div 

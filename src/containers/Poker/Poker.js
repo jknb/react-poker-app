@@ -7,6 +7,7 @@ import Dealer from '../../components/Dealer/Dealer';
 import { generatedDeck } from '../../components/Deck/Deck';
 import { playerList } from './playerList';
 import { EventEmitter } from '../../events';
+import { evaluateHand, cardGrouping } from './handEvaluator';
 
 import { shuffle } from 'lodash-es';
 import classes from './Poker.module.css';
@@ -22,16 +23,16 @@ class Poker extends Component {
     const { players } = this.state;
     const newDeck = shuffle(generatedDeck());
 
-    const newPlayers = players.map(player => {
-      return {
-        ...player,
-        hand: newDeck.splice(0, 5),
-        chips: 1500,
-        isInHand: true,
-      };
-    });
+    const newPlayers = players.map(player => ({
+      ...player,
+      hand: newDeck.splice(0, 5),
+      chips: 1500,
+      isInHand: true,
+    }));
 
     const dealerIndex = Math.floor(Math.random() * (players.length));
+
+    newPlayers.forEach(player => evaluateHand(player.hand));
 
     this.setState({
       deck: newDeck,
@@ -39,6 +40,7 @@ class Poker extends Component {
       gameStarted: true,
       dealerIndex: dealerIndex,
       currentPlayerIndex: (dealerIndex + 1) % players.length,
+      winnerIndex: 1,
     });
   }
 
@@ -48,11 +50,10 @@ class Poker extends Component {
 
   raiseClickedHandler = (amount) => {
     const { players, currentPlayerIndex } = this.state;
-    let { chips } = players[currentPlayerIndex];
 
-    const newPlayers = this.state.players.map((player, index) => { 
-      return index === currentPlayerIndex ? {...player, chips: Math.max(0, chips - amount)} : player;
-    });
+    const newPlayers = players.map((player, index) => (
+      index === currentPlayerIndex ? { ...player, chips: Math.max(0, player.chips - amount) } : player
+    ));
 
     this.setState({
       players: newPlayers,
@@ -62,10 +63,10 @@ class Poker extends Component {
 
   foldClickedHandler = () => {
     const { players, currentPlayerIndex } = this.state;
-    
-    const newPlayers = players.map((player, index) => {
-      return index === currentPlayerIndex ? {...player, hand: [], isInHand: false} : player;
-    });
+
+    const newPlayers = players.map((player, index) => (
+      index === currentPlayerIndex ? { ...player, hand: [], isInHand: false } : player
+    ));
 
     this.setState({
       players: newPlayers,
@@ -74,11 +75,11 @@ class Poker extends Component {
   }
 
   callClickedHandler = () => {
-    
+
   }
 
   getNextPlayerIndex = (currentPlayerIndex) => {
-    // Cycles through indices (players[last + 1] -> players[first])
+    // Cycles through indices (players[last] >>> players[first])
     const { players } = this.state;
     const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
 
@@ -86,10 +87,12 @@ class Poker extends Component {
   }
 
   render() {
-    const { 
+    const {
       players,
       currentPlayerIndex = 0,
       dealerIndex,
+      gameStarted,
+      winnerIndex = 0,
     } = this.state;
 
     return (
@@ -98,11 +101,11 @@ class Poker extends Component {
           dealer
           [ cards, pot ]
           <br /><br />
-          *Current Player: {players[currentPlayerIndex].name}*
+          *Winner: {players[winnerIndex].name}*
           <Players players={players} />
           <Dealer dealerIndex={dealerIndex} />
         </PokerTable>
-        {this.state.gameStarted
+        {gameStarted
           ?
           <BettingPanel
             chips={players[currentPlayerIndex].chips}
