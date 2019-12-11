@@ -7,7 +7,7 @@ import Dealer from '../../components/Dealer/Dealer';
 import { generatedDeck } from '../../components/Deck/Deck';
 import { playerList } from './playerList';
 import { EventEmitter } from '../../events';
-import { evaluateHand, cardGrouping } from './handEvaluator';
+import { rank } from './handEvaluator';
 
 import { shuffle } from 'lodash-es';
 import classes from './Poker.module.css';
@@ -32,7 +32,7 @@ class Poker extends Component {
 
     const dealerIndex = Math.floor(Math.random() * (players.length));
 
-    newPlayers.forEach(player => evaluateHand(player.hand));
+    newPlayers.forEach(player => console.log(player.name, '>>> ', rank(player.hand)));
 
     this.setState({
       deck: newDeck,
