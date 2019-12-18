@@ -7,7 +7,7 @@ import Dealer from '../../components/Dealer/Dealer';
 import { generatedDeck } from '../../components/Deck/Deck';
 import { playerList } from './playerList';
 import { EventEmitter } from '../../events';
-import { rank } from './handEvaluator';
+import { calculateBestHand, winnerIndex } from './handEvaluator';
 
 import { shuffle } from 'lodash-es';
 import classes from './Poker.module.css';
@@ -29,10 +29,12 @@ class Poker extends Component {
       chips: 1500,
       isInHand: true,
     }));
-
+    
     const dealerIndex = Math.floor(Math.random() * (players.length));
-
-    newPlayers.forEach(player => console.log(player.name, '>>> ', rank(player.hand)));
+    
+    const playerHands = newPlayers.map(player => player.hand);
+    console.log('BEST HAND >>> ', calculateBestHand(playerHands));
+    console.log('chicken dinner -> ', winnerIndex(playerHands));
 
     this.setState({
       deck: newDeck,
@@ -40,7 +42,8 @@ class Poker extends Component {
       gameStarted: true,
       dealerIndex: dealerIndex,
       currentPlayerIndex: (dealerIndex + 1) % players.length,
-      winnerIndex: 1,
+      winnerIndex: winnerIndex(playerHands),
+      winningHandCombo: calculateBestHand(playerHands)['result'],
     });
   }
 
@@ -93,6 +96,7 @@ class Poker extends Component {
       dealerIndex,
       gameStarted,
       winnerIndex = 0,
+      winningHandCombo,
     } = this.state;
 
     return (
@@ -102,6 +106,7 @@ class Poker extends Component {
           [ cards, pot ]
           <br /><br />
           *Winner: {players[winnerIndex].name}*
+          *Combo: {winningHandCombo}
           <Players players={players} />
           <Dealer dealerIndex={dealerIndex} />
         </PokerTable>

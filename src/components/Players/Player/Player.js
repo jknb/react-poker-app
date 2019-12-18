@@ -7,16 +7,19 @@ import { getRotateAngle, getTranslationY } from '../../../utils/tableSeatsPositi
 const Player = (props) => {
   const playersLength = useContext(PlayersLengthContext);
   const rotateAngle = getRotateAngle(props.seatIndex, playersLength);
-  // const translationY = 80 + getTranslationY(props.seatIndex, playersLength);
-  const translationY = getTranslationY(props.seatIndex, playersLength);
+  const translationY = 80 + getTranslationY(props.seatIndex, playersLength);
+  // const translationY = getTranslationY(props.seatIndex, playersLength);
 
   return (
-    <div 
+    <div
       className={classes.Player}
-      style={{transform: 
-        `rotate(${rotateAngle}rad) 
-        translateY(${translationY}px) 
-        rotate(-${rotateAngle}rad)`}}>
+      style={{
+        transform:
+          `rotate(${rotateAngle}rad) 
+          translateY(${translationY}px) 
+          rotate(-${rotateAngle}rad)`
+      }}
+    >
       <div>{props.name}</div>
       <Hand hand={props.hand} />
       <div>Chips: {props.chips}</div>

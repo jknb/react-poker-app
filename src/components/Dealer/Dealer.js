@@ -12,11 +12,12 @@ const Dealer = (props) => {
     <div
       className={classes.Dealer}
       style={{
-        transform: `
-        rotate(${rotateAngle}rad) 
-        translateY(${translationY}px) 
-        rotate(-${rotateAngle}rad)`
-      }}>
+        transform:
+          `rotate(${rotateAngle}rad) 
+          translateY(${translationY}px) 
+          rotate(-${rotateAngle}rad)`
+      }}
+    >
       D
     </div>
   );

@@ -1,7 +1,6 @@
 import React from 'react';
 import classes from './Players.module.css';
 import Player from './Player/Player';
-import uuid from 'uuid';
 
 const Players = (props) => {
 
@@ -9,7 +8,7 @@ const Players = (props) => {
     <ul className={classes.Players}>
       {props.players.map((player, index) => (
         <Player 
-          key={uuid()}
+          key={index}
           playersLength={props.players.length} 
           seatIndex={index} 
           name={player.name}
