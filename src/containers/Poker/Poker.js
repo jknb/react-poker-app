@@ -13,6 +13,21 @@ import { shuffle } from 'lodash-es';
 import classes from './Poker.module.css';
 
 class Poker extends Component {
+  rounds = [
+    {
+      name: 'first',
+      idk: 0,
+    },
+    {
+      name: 'second',
+      idk: 1,
+    },
+    {
+      name: 'showdown',
+      idk: 2,
+    },
+  ];
+
   state = {
     deck: [],
     players: playerList,
@@ -29,9 +44,9 @@ class Poker extends Component {
       chips: 1500,
       isInHand: true,
     }));
-    
+
     const dealerIndex = Math.floor(Math.random() * (players.length));
-    
+
     const playerHands = newPlayers.map(player => player.hand);
     console.log('BEST HAND >>> ', calculateBestHand(playerHands));
     console.log('chicken dinner -> ', winnerIndex(playerHands));
@@ -43,7 +58,8 @@ class Poker extends Component {
       dealerIndex: dealerIndex,
       currentPlayerIndex: (dealerIndex + 1) % players.length,
       winnerIndex: winnerIndex(playerHands),
-      winningHandCombo: calculateBestHand(playerHands)['result'],
+      winningHandCombo: calculateBestHand(playerHands).result[0],
+      bettingRound: this.rounds.find(({ name }) => name === 'first'),
     });
   }
 
@@ -61,6 +77,7 @@ class Poker extends Component {
     this.setState({
       players: newPlayers,
       currentPlayerIndex: this.getNextPlayerIndex(currentPlayerIndex),
+      lastBettor: currentPlayerIndex,
     });
   }
 
@@ -71,22 +88,49 @@ class Poker extends Component {
       index === currentPlayerIndex ? { ...player, hand: [], isInHand: false } : player
     ));
 
+    const bettingRound = this.isRoundOver() ? this.getNextBettingRound() : this.state.bettingRound;
+
     this.setState({
       players: newPlayers,
       currentPlayerIndex: this.getNextPlayerIndex(currentPlayerIndex),
+      bettingRound: bettingRound,
     });
   }
 
   callClickedHandler = () => {
+    const { players, currentPlayerIndex } = this.state;
 
+    const newPlayers = players.map((player, index) => (
+      index === currentPlayerIndex ? { ...player, chips: player.chips - 100 } : player
+    ));
+
+    const bettingRound = this.isRoundOver() ? this.getNextBettingRound() : this.state.bettingRound;
+
+    this.setState({
+      players: newPlayers,
+      currentPlayerIndex: this.getNextPlayerIndex(currentPlayerIndex),
+      bettingRound: bettingRound,
+    });
   }
 
   getNextPlayerIndex = (currentPlayerIndex) => {
     // Cycles through indices (players[last] >>> players[first])
     const { players } = this.state;
     const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
-
     return players[nextPlayerIndex].isInHand ? nextPlayerIndex : this.getNextPlayerIndex(nextPlayerIndex);
+  }
+
+  isRoundOver = () => {
+    const { lastBettor, currentPlayerIndex, players } = this.state;
+    return (
+      lastBettor === this.getNextPlayerIndex(currentPlayerIndex) ||
+      players.filter(player => player.isInHand).length === 1
+    );
+  }
+
+  getNextBettingRound = () => {
+    const currentRoundIndex = this.rounds.indexOf(this.state.bettingRound);
+    return this.rounds[(currentRoundIndex + 1) % this.rounds.length];
   }
 
   render() {
@@ -97,6 +141,7 @@ class Poker extends Component {
       gameStarted,
       winnerIndex = 0,
       winningHandCombo,
+      bettingRound = { name: '' },
     } = this.state;
 
     return (
@@ -104,9 +149,12 @@ class Poker extends Component {
         <PokerTable>
           dealer
           [ cards, pot ]
-          <br /><br />
+          <br />
           *Winner: {players[winnerIndex].name}*
+          <br />
           *Combo: {winningHandCombo}
+          <br />
+          Betting Round: {bettingRound.name}
           <Players players={players} />
           <Dealer dealerIndex={dealerIndex} />
         </PokerTable>

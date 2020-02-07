@@ -100,23 +100,26 @@ const compareHandsAsLetters = (p1Hand, p2Hand) => {
   return letters1 > letters2 ? p1Hand : letters2 > letters1 ? p2Hand : "TIE";
 };
 
-export const calculateBestHand = hands => hands
-  .map(hand => ({
-    hand: hand,
-    result: evaluateHand(new cardGroupings(hand))
-  }))
-  .reduce((prvHand, curHand) => {
-    const prvWeight = getWeight(prvHand.result);
-    const curWeight = getWeight(curHand.result);
-
-    if (prvWeight > curWeight) {
-      return prvHand;
-    } else if (curWeight > prvWeight) {
-      return curHand;
-    } else {
-      return compareHandsAsLetters(prvHand, curHand);
-    }
-  })
+export const calculateBestHand = hands => {
+  return hands
+    .map(hand => ({
+      hand: hand,
+      result: evaluateHand(new cardGroupings(hand))
+    }))
+    .reduce((prvHand, curHand) => {
+      const prvWeight = getWeight(prvHand.result);
+      const curWeight = getWeight(curHand.result);
+      if (prvWeight > curWeight) {
+        return prvHand;
+      }
+      else if (curWeight > prvWeight) {
+        return curHand;
+      }
+      else {
+        return compareHandsAsLetters(prvHand, curHand);
+      }
+    });
+}
 
 export const winnerIndex = hands => {
   const winningHand = calculateBestHand(hands)['hand'];
