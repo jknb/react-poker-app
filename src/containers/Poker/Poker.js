@@ -4,13 +4,14 @@ import Players from '../../components/Players/Players';
 import BettingPanel from '../../components/BettingPanel/BettingPanel';
 import Dealer from '../../components/Dealer/Dealer';
 
-import { generatedDeck } from '../../components/Deck/Deck';
 import { playerList } from './playerList';
 import { EventEmitter } from '../../events';
 import { calculateBestHand, winnerIndex } from './handEvaluator';
 
-import { shuffle } from 'lodash-es';
 import classes from './Poker.module.css';
+
+import { connect } from 'react-redux';
+import { generateDeck, shuffleDeck } from '../../actions/deckActions';
 
 class Poker extends Component {
   rounds = [
@@ -36,11 +37,12 @@ class Poker extends Component {
 
   newGameStart = () => {
     const { players } = this.state;
-    const newDeck = shuffle(generatedDeck());
+    const newDeck = this.props.generateDeck().payload;
+    const shuffledDeck = this.props.shuffleDeck(newDeck).payload;
 
     const newPlayers = players.map(player => ({
       ...player,
-      hand: newDeck.splice(0, 5),
+      hand: shuffledDeck.splice(0, 5),
       chips: 1500,
       isInHand: true,
     }));
@@ -52,7 +54,7 @@ class Poker extends Component {
     console.log('chicken dinner -> ', winnerIndex(playerHands));
 
     this.setState({
-      deck: newDeck,
+      deck: shuffledDeck,
       players: newPlayers,
       gameStarted: true,
       dealerIndex: dealerIndex,
@@ -173,4 +175,8 @@ class Poker extends Component {
   }
 }
 
-export default Poker;
+const mapStateToProps = state => ({
+  deck: state.deck.deck,
+});
+
+export default connect(mapStateToProps, { generateDeck, shuffleDeck })(Poker);

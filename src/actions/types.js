@@ -1,0 +1,2 @@
+export const GENERATE_DECK = 'GENERATE_DECK';
+export const SHUFFLE_DECK = 'SHUFFLE_DECK';
