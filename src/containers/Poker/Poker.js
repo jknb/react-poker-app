@@ -4,73 +4,18 @@ import Players from '../../components/Players/Players';
 import BettingPanel from '../../components/BettingPanel/BettingPanel';
 import Dealer from '../../components/Dealer/Dealer';
 
-import { playerList } from './playerList';
-import { EventEmitter } from '../../events';
-import { calculateBestHand, winnerIndex } from './handEvaluator';
-
 import classes from './Poker.module.css';
 
 import { connect } from 'react-redux';
 import { generateDeck, shuffleDeck } from '../../actions/deckActions';
+import { initializePlayers } from '../../actions/gameActions';
+import { initializeGame } from '../../actions/gameActions';
 
 class Poker extends Component {
-  rounds = [
-    {
-      name: 'first',
-      idk: 0,
-    },
-    {
-      name: 'second',
-      idk: 1,
-    },
-    {
-      name: 'showdown',
-      idk: 2,
-    },
-  ];
-
-  state = {
-    deck: [],
-    players: playerList,
-    gameStarted: false,
-  }
-
-  newGameStart = () => {
-    const { players } = this.state;
-    const newDeck = this.props.generateDeck().payload;
-    const shuffledDeck = this.props.shuffleDeck(newDeck).payload;
-
-    const newPlayers = players.map(player => ({
-      ...player,
-      hand: shuffledDeck.splice(0, 5),
-      chips: 1500,
-      isInHand: true,
-    }));
-
-    const dealerIndex = Math.floor(Math.random() * (players.length));
-
-    const playerHands = newPlayers.map(player => player.hand);
-    console.log('BEST HAND >>> ', calculateBestHand(playerHands));
-    console.log('chicken dinner -> ', winnerIndex(playerHands));
-
-    this.setState({
-      deck: shuffledDeck,
-      players: newPlayers,
-      gameStarted: true,
-      dealerIndex: dealerIndex,
-      currentPlayerIndex: (dealerIndex + 1) % players.length,
-      winnerIndex: winnerIndex(playerHands),
-      winningHandCombo: calculateBestHand(playerHands).result[0],
-      bettingRound: this.rounds.find(({ name }) => name === 'first'),
-    });
-  }
-
-  componentDidMount() {
-    EventEmitter.subscribe('startGame', this.newGameStart);
-  }
+  componentDidMount() {}
 
   raiseClickedHandler = (amount) => {
-    const { players, currentPlayerIndex } = this.state;
+    const { players, currentPlayerIndex } = this.props;
 
     const newPlayers = players.map((player, index) => (
       index === currentPlayerIndex ? { ...player, chips: Math.max(0, player.chips - amount) } : player
@@ -117,7 +62,7 @@ class Poker extends Component {
 
   getNextPlayerIndex = (currentPlayerIndex) => {
     // Cycles through indices (players[last] >>> players[first])
-    const { players } = this.state;
+    const { players } = this.props;
     const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
     return players[nextPlayerIndex].isInHand ? nextPlayerIndex : this.getNextPlayerIndex(nextPlayerIndex);
   }
@@ -138,19 +83,20 @@ class Poker extends Component {
   render() {
     const {
       players,
+      game,
+    } = this.props;
+    const {
       currentPlayerIndex = 0,
       dealerIndex,
       gameStarted,
       winnerIndex = 0,
       winningHandCombo,
       bettingRound = { name: '' },
-    } = this.state;
+    } = game;
 
     return (
       <div className={classes.Poker}>
         <PokerTable>
-          dealer
-          [ cards, pot ]
           <br />
           *Winner: {players[winnerIndex].name}*
           <br />
@@ -164,7 +110,7 @@ class Poker extends Component {
           ?
           <BettingPanel
             chips={players[currentPlayerIndex].chips}
-            raiseClicked={this.raiseClickedHandler}
+            
             foldClicked={this.foldClickedHandler}
             callClicked={this.callClickedHandler}
           />
@@ -175,8 +121,18 @@ class Poker extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  deck: state.deck.deck,
-});
+const mapStateToProps = state => {
+  return {
+    deck: state.deck.deck,
+    players: state.game.players,
+    game: state.game,
+  };
+}
 
-export default connect(mapStateToProps, { generateDeck, shuffleDeck })(Poker);
+export default connect(mapStateToProps,
+  {
+    generateDeck,
+    shuffleDeck,
+    initializePlayers,
+    initializeGame,
+  })(Poker);

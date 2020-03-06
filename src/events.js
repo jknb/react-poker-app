@@ -8,7 +8,7 @@ export const EventEmitter = {
   },
   subscribe: function(event, callback) {
     if (!this.events[event]) {
-      this.events[event] = []
+      this.events[event] = [];
     }
     this.events[event].push(callback);
   }

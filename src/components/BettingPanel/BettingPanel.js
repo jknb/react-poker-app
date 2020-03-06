@@ -3,6 +3,9 @@ import classes from './BettingPanel.module.css';
 import RaiseBar from './RaiseBar/RaiseBar';
 import Button from '../Button/Button';
 
+import { connect } from 'react-redux';
+import { betRaise } from '../../actions/playerActions';
+
 class BettingPanel extends Component {
   state = { inputValue: '' }
 
@@ -17,7 +20,7 @@ class BettingPanel extends Component {
         
           <Button className={`${classes.Button} ${classes.Left}`} clicked={this.props.foldClicked} value="Fold" />
           <Button className={`${classes.Button} ${classes.Middle}`} clicked={this.props.callClicked} value="Call" />
-          <Button className={`${classes.Button} ${classes.Right}`} clicked={() => this.props.raiseClicked(this.state.inputValue)} value={"Raise " + this.state.inputValue} />
+          <Button className={`${classes.Button} ${classes.Right}`} clicked={() => this.props.betRaise(this.state.inputValue)} value={"Raise " + this.state.inputValue} />
         
         
       </div>
@@ -25,4 +28,4 @@ class BettingPanel extends Component {
   }
 };
 
-export default BettingPanel;
+export default connect(null, { betRaise })(BettingPanel);

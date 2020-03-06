@@ -1,6 +1,10 @@
 import { combineReducers } from 'redux';
-import deckReducer from './deckReducer';
+import DeckReducer from './DeckReducer';
+import PlayerReducer from './PlayerReducer';
+import GameReducer from './GameReducer';
 
 export default combineReducers({
-  deck: deckReducer,
+  deck: DeckReducer,
+  betActions: PlayerReducer,
+  game: GameReducer,
 });
